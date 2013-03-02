@@ -9,7 +9,6 @@ use Raekke\Producer;
 use Raekke\QueueFactory\InMemoryQueueFactory;
 use Raekke\QueueFactory\QueueFactory;
 use Raekke\Serializer\Serializer;
-use Raekke\ServiceResolver;
 use Silex\Application;
 
 /**
@@ -60,7 +59,7 @@ class RaekkeServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['raekke.service_resolver'] = $app->share(function ($app) {
-            return new ServiceResolver;
+            return new ServiceResolver($app);
         });
 
         $app['raekke.queue_factory'] = $app->raw('raekke.queue_factory.real');

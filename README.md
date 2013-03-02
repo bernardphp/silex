@@ -49,7 +49,9 @@ use Raekke\Command\ConsumeCommand;
 
 // .. create $app
 $app['raekke.service_resolver'] = $app->share($app->extend('raekke.service_resolver', function ($resolver, $app) {
-    $resolver->register('SendNewsletter', $app['send_newsletter_service']);
+    // The ServicePrivider uses a special lazy loading service resolver.
+    // which will resolve the service based on the id.
+    $resolver->register('SendNewsletter', 'my_service_id');
 
     return $resolver;
 }));
