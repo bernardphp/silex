@@ -8,7 +8,10 @@
         }
     },
     "minimum-stability" : "dev",
+
     "require" : {
-        "henrikbjorn/raekke" : "0.1.*"
+        "php" : ">=5.3.3",
+        "henrikbjorn/raekke" : "0.1.*",
+        "predis/service-provider" : "~0.4"
     }
 }
