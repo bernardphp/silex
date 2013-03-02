@@ -2,6 +2,7 @@
 
 namespace Raekke\Silex;
 
+use JMS\Serializer\SerializerBuilder;
 use Raekke\Connection;
 use Raekke\Consumer;
 use Raekke\Producer;
@@ -21,12 +22,14 @@ class RaekkeServiceProvider implements \Silex\ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['serializer.builder'] = $app->share($app->extend('jms_serializer.builder', function ($builder) {
+        $app['serializer.builder'] = $app->share(function () {
             $r = new \ReflectionClass('Raekke\Connection');
+
+            $builder = SerializerBuilder::create();
             $builder->addMetadataDir(dirname($r->getFilename()) . '/Resources/serializer', 'Raekke');
 
             return $builder;
-        }));
+        });
 
         $app['serializer'] = $app->share(function ($app) {
             return $app['serializer.builder']->build();
