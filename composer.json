@@ -1,0 +1,14 @@
+{
+    "name" : "henrikbjorn/raekke-service-provider",
+    "description" : "Silex service provider for Raekke",
+    "license" : "MIT",
+    "autoload" : {
+        "psr-0" : {
+            "Raekke" : "src/"
+        }
+    },
+    "minimum-stability" : "dev",
+    "require" : {
+        "henrikbjorn/raekke" : "0.1.*"
+    }
+}
