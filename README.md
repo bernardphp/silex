@@ -13,18 +13,14 @@ Registering and configuring `MultiPredisServiceProvider` is required as a
 <?php
 
 use Raekke\Silex\RaekkeServiceProvider;
-use Predis\Silex\MultiPredisServiceProvider;
+use Predis\Silex\PredisServiceProvider;
 
 // .. create $app
 $app->register(new RaekkeServiceProvider);
-$app->register(new MultiPredisServiceProvider);
+$app->register(new PredisServiceProvider);
 
-$app['predis.clients'] = array(
-    'raekke' => array(
-        'parameters' => 'tcp://localhost',
-        'options' => array('prefix' => 'raekke:'),
-    ),
-);
+// if you want to use a custom predis client the best thing is to
+// overwrite $app['raekke.predis'];
 ```
 
 Now you are ready to produce messages to a queue.

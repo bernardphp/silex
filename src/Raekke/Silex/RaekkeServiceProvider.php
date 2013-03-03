@@ -39,8 +39,12 @@ class RaekkeServiceProvider implements \Silex\ServiceProviderInterface
             return new Serializer($app['serializer']);
         });
 
+        $app['raekke.predis'] = $app->share(function ($app) {
+            return $app['predis'];
+        });
+
         $app['raekke.connection'] = $app->share(function ($app) {
-            return new Connection($app['predis']['raekke']);
+            return new Connection($app['raekke.predis']);
         });
 
         $app['raekke.queue_factory.real'] = $app->share(function ($app) {
