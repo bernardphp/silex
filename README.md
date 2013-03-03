@@ -21,6 +21,10 @@ $app->register(new PredisServiceProvider);
 
 // if you want to use a custom predis client the best thing is to
 // overwrite $app['raekke.predis'];
+$app['predis.parameters']  = 'tcp://localhost';
+$app['predis.options'] = array(
+    'prefix' => 'raekke:',
+);
 ```
 
 Now you are ready to produce messages to a queue.
