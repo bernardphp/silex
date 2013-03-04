@@ -3,13 +3,13 @@
 namespace Raekke\Silex;
 
 use JMS\Serializer\SerializerBuilder;
-use Raekke\Connection;
+use Raekke\Connection\PredisConnection;
 use Raekke\Consumer;
 use Raekke\Producer;
-use Raekke\QueueFactory\InMemoryQueueFactory;
-use Raekke\QueueFactory\QueueFactory;
-use Raekke\Serializer\Serializer;
-use Raekke\ServiceResolver\PimpleAwareServiceResolver;
+use Raekke\QueueFactory\InMemoryFactory;
+use Raekke\QueueFactory\PersistentFactory;
+use Raekke\Serializer\JMSSerializer;
+use Raekke\ServiceResolver\PimpleAwareResolver;
 use Silex\Application;
 
 /**
@@ -36,7 +36,7 @@ class RaekkeServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['raekke.serializer'] = $app->share(function ($app) {
-            return new Serializer($app['serializer']);
+            return new JMSSerializer($app['serializer']);
         });
 
         $app['raekke.predis'] = $app->share(function ($app) {
@@ -44,15 +44,15 @@ class RaekkeServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['raekke.connection'] = $app->share(function ($app) {
-            return new Connection($app['raekke.predis']);
+            return new PredisConnection($app['raekke.predis']);
         });
 
         $app['raekke.queue_factory.real'] = $app->share(function ($app) {
-            return new QueueFactory($app['raekke.connection'], $app['raekke.serializer']);
+            return new PersistentFactory($app['raekke.connection'], $app['raekke.serializer']);
         });
 
         $app['raekke.queue_factory.in_memory'] = $app->share(function ($app) {
-            return new InMemoryQueueFactory();
+            return new InMemoryFactory();
         });
 
         $app['raekke.consumer'] = $app->share(function ($app) {
@@ -64,7 +64,7 @@ class RaekkeServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['raekke.service_resolver'] = $app->share(function ($app) {
-            return new PimpleAwareServiceResolver($app);
+            return new PimpleAwareResolver($app);
         });
 
         $app['raekke.queue_factory'] = $app->raw('raekke.queue_factory.real');
