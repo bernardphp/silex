@@ -6,8 +6,8 @@ Brings Raekke to Silex.
 Getting Started
 ---------------
 
-Registering and configuring `MultiPredisServiceProvider` is required as a
-`$app['predis']['raekke']` service is used by the connection.
+Registering and configuring `PredisServiceProvider` is required. It will default to use the
+service `predis`. This can be overwritten if needed.
 
 ``` php
 <?php
