@@ -7,11 +7,18 @@
             "Raekke" : "src/"
         }
     },
-    "minimum-stability" : "dev",
 
     "require" : {
-        "php" : ">=5.3.3",
-        "henrikbjorn/raekke" : "0.1.*",
-        "predis/service-provider" : "~0.4"
+        "php"                     : ">=5.3.3",
+        "henrikbjorn/raekke"      : "~0.1",
+        "predis/service-provider" : "~0.4",
+        "jms/serializer"          : "0.12.*@dev",
+        "silex/silex"             : "1.0.*@dev"
+    },
+
+    "extra" : {
+        "branch-alias" : {
+            "dev-master" : "0.1.x-dev"
+        }
     }
 }
