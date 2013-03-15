@@ -1,16 +1,16 @@
 {
-    "name" : "henrikbjorn/raekke-service-provider",
-    "description" : "Silex service provider for Raekke",
+    "name" : "henrikbjorn/bernard-service-provider",
+    "description" : "Silex service provider for Bernard",
     "license" : "MIT",
     "autoload" : {
         "psr-0" : {
-            "Raekke" : "src/"
+            "Bernard" : "src/"
         }
     },
 
     "require" : {
         "php"                     : ">=5.3.3",
-        "henrikbjorn/raekke"      : "~0.1",
+        "henrikbjorn/bernard"      : "~0.1",
         "predis/service-provider" : "~0.4",
         "jms/serializer"          : "0.12.*@dev",
         "silex/silex"             : "1.0.*@dev"
