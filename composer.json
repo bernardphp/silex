@@ -10,7 +10,7 @@
 
     "require" : {
         "php"                     : ">=5.3.3",
-        "henrikbjorn/bernard"      : "~0.1",
+        "henrikbjorn/bernard"     : "~0.1",
         "predis/service-provider" : "~0.4",
         "jms/serializer"          : "0.12.*@dev",
         "silex/silex"             : "1.0.*@dev"
