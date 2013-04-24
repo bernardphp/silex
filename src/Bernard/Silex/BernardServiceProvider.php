@@ -72,7 +72,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
                 return $app['bernard.queue_factory.in_memory');
             }
 
-            return $app['bernard.queue_factory.in_memory');
+            return $app['bernard.queue_factory.real');
         };
     }
 
