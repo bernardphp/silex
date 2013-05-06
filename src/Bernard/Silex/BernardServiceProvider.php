@@ -67,11 +67,13 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
             return new PimpleAwareResolver($app);
         });
 
-        $app['bernard.queue_factory'] = $app->raw('bernard.queue_factory.real');
+        $app['bernard.queue_factory'] = function ($app) {
+            if ($app['debug']) {
+                return $app['bernard.queue_factory.in_memory');
+            }
 
-        if ($app['debug']) {
-            $app['bernard.queue_factory'] = $app->raw('bernard.queue_factory.in_memory');
-        }
+            return $app['bernard.queue_factory.real');
+        };
     }
 
     /**
