@@ -2,14 +2,15 @@
 
 namespace Bernard\Silex;
 
-use JMS\Serializer\SerializerBuilder;
-use Bernard\Connection\PredisConnection;
 use Bernard\Consumer;
+use Bernard\Driver\PredisDriver;
+use Bernard\JMSSerializer\EnvelopeHandler;
 use Bernard\Producer;
 use Bernard\QueueFactory\InMemoryFactory;
 use Bernard\QueueFactory\PersistentFactory;
 use Bernard\Serializer\JMSSerializer;
 use Bernard\ServiceResolver\PimpleAwareResolver;
+use JMS\Serializer\SerializerBuilder;
 use Silex\Application;
 
 /**
@@ -23,10 +24,12 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
     public function register(Application $app)
     {
         $app['serializer.builder'] = $app->share(function () {
-            $r = new \ReflectionClass('Bernard\Connection');
+            $r = new \ReflectionClass('Bernard\Driver');
 
             $builder = SerializerBuilder::create();
-            $builder->addMetadataDir(dirname($r->getFilename()) . '/Resources/serializer', 'Bernard');
+            $builder->configureHandlers(function ($registry) {
+                $registry->registerSubscribingHandler(new EnvelopeHandler);
+            });
 
             return $builder;
         });
@@ -44,7 +47,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.connection'] = $app->share(function ($app) {
-            return new PredisConnection($app['bernard.predis']);
+            return new PredisDriver($app['bernard.predis']);
         });
 
         $app['bernard.queue_factory.real'] = $app->share(function ($app) {

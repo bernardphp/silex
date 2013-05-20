@@ -10,7 +10,7 @@
 
     "require" : {
         "php"                     : ">=5.3.3",
-        "henrikbjorn/bernard"     : "~0.2",
+        "henrikbjorn/bernard"     : "~0.4",
         "predis/service-provider" : "~0.4",
         "jms/serializer"          : "~0.12",
         "silex/silex"             : "~1.0"
@@ -18,7 +18,7 @@
 
     "extra" : {
         "branch-alias" : {
-            "dev-master" : "0.2.x-dev"
+            "dev-master" : "0.3.x-dev"
         }
     }
 }
