@@ -24,8 +24,6 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
     public function register(Application $app)
     {
         $app['serializer.builder'] = $app->share(function () {
-            $r = new \ReflectionClass('Bernard\Driver');
-
             $builder = SerializerBuilder::create();
             $builder->configureHandlers(function ($registry) {
                 $registry->registerSubscribingHandler(new EnvelopeHandler);
