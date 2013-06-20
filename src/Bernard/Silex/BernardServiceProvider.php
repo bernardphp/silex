@@ -9,7 +9,7 @@ use Bernard\Producer;
 use Bernard\QueueFactory\InMemoryFactory;
 use Bernard\QueueFactory\PersistentFactory;
 use Bernard\Serializer\JMSSerializer;
-use Bernard\ServiceResolver\PimpleAwareResolver;
+use Bernard\Pimple\PimpleAwareResolver;
 use JMS\Serializer\SerializerBuilder;
 use Silex\Application;
 
