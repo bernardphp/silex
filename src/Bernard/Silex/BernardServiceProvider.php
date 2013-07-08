@@ -22,10 +22,8 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['bernard.options'] = array(
-            'driver' => 'doctrine',
-            'serializer' => 'symfony',
-        );
+        $app['bernard.driver'] = 'doctrine';
+        $app['bernard.serializer'] = 'symfony';
 
         $this->registerDrivers($app);
         $this->registerSerializers($app);
