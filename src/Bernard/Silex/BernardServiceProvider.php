@@ -22,8 +22,10 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['bernard.driver'] = 'doctrine';
-        $app['bernard.serializer'] = 'symfony';
+        $app['bernard.options'] = array(
+            'driver' => 'doctrine',
+            'serializer' => 'symfony',
+        );
 
         $this->registerDrivers($app);
         $this->registerSerializers($app);
@@ -53,11 +55,11 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.driver'] = $app->share(function ($app) {
-            return $app['bernard.driver_' . $app['bernard.driver']];
+            return $app['bernard.driver_' . $app['bernard.options']['driver']];
         });
 
         $app['bernard.serializer'] = $app->share(function ($app) {
-            return $app['bernard.serializer_' . $app['bernard.driver']];
+            return $app['bernard.serializer_' . $app['bernard.options']['serializer']];
         });
     }
 
