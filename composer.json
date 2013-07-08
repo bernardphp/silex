@@ -1,15 +1,11 @@
 {
-    "name" : "bernard/silex",
+    "name" : "henrikbjorn/bernard-service-provider",
     "description" : "Silex service provider for Bernard",
     "license" : "MIT",
     "autoload" : {
         "psr-0" : {
             "Bernard\\Silex\\" : "src/"
         }
-    },
-
-    "replace" : {
-        "henrikbjorn/bernard-service-provider" : "self.version"
     },
 
     "require" : {
