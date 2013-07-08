@@ -3,14 +3,13 @@
 namespace Bernard\Silex;
 
 use Bernard\Consumer;
-use Bernard\Driver\PredisDriver;
-use Bernard\JMSSerializer\EnvelopeHandler;
+use Bernard\Driver;
+use Bernard\JMSSerializer;
+use Bernard\Pimple;
 use Bernard\Producer;
-use Bernard\QueueFactory\InMemoryFactory;
-use Bernard\QueueFactory\PersistentFactory;
-use Bernard\Serializer\JMSSerializer;
-use Bernard\Pimple\PimpleAwareResolver;
-use JMS\Serializer\SerializerBuilder;
+use Bernard\QueueFactory;
+use Bernard\Serializer;
+use Bernard\Symfony;
 use Silex\Application;
 
 /**
@@ -23,58 +22,43 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['serializer.builder'] = $app->share(function () {
-            $builder = SerializerBuilder::create();
-            $builder->configureHandlers(function ($registry) {
-                $registry->registerSubscribingHandler(new EnvelopeHandler);
-            });
+        $app['bernard.driver'] = 'doctrine';
+        $app['bernard.serializer'] = 'symfony';
 
-            return $builder;
-        });
-
-        $app['serializer'] = $app->share(function ($app) {
-            return $app['serializer.builder']->build();
-        });
-
-        $app['bernard.serializer'] = $app->share(function ($app) {
-            return new JMSSerializer($app['serializer']);
-        });
-
-        $app['bernard.predis'] = $app->share(function ($app) {
-            return $app['predis'];
-        });
-
-        $app['bernard.connection'] = $app->share(function ($app) {
-            return new PredisDriver($app['bernard.predis']);
-        });
-
-        $app['bernard.queue_factory.real'] = $app->share(function ($app) {
-            return new PersistentFactory($app['bernard.connection'], $app['bernard.serializer']);
-        });
-
-        $app['bernard.queue_factory.in_memory'] = $app->share(function ($app) {
-            return new InMemoryFactory();
-        });
+        $this->registerDrivers($app);
+        $this->registerSerializers($app);
+        $this->registerConsole($app);
 
         $app['bernard.consumer'] = $app->share(function ($app) {
-            return new Consumer($app['bernard.service_resolver'], $app['bernard.queue_factory']->create('failed'));
+            return new Consumer($app['bernard.service_resolver'], $app['bernard.queue_factory']);
         });
 
         $app['bernard.producer'] = $app->share(function ($app) {
             return new Producer($app['bernard.queue_factory']);
         });
 
-        $app['bernard.service_resolver'] = $app->share(function ($app) {
-            return new PimpleAwareResolver($app);
+        $app['bernard.queue_factory'] = $app->share(function ($app) {
+            return new QueueFactory\PersistentFactory($app['bernard.driver'], $app['bernard.serializer']);
         });
 
-        $app['bernard.queue_factory'] = function ($app) {
-            if ($app['debug']) {
-                return $app['bernard.queue_factory.in_memory'];
-            }
+        $app['bernard.service_resolver'] = $app->share(function ($app) {
+            $resolver = new Pimple\PimpleAwareResolver($app);
 
-            return $app['bernard.queue_factory.real'];
-        };
+            $names = array_keys($app['bernard.services']);
+            $serviceIds = array_values($app['bernard.services']);
+
+            array_map(array($resolver, 'register'), $names, $serviceIds);
+
+            return $resolver;
+        });
+
+        $app['bernard.driver'] = $app->share(function ($app) {
+            return $app['bernard.driver_' . $app['bernard.driver']];
+        });
+
+        $app['bernard.serializer'] = $app->share(function ($app) {
+            return $app['bernard.serializer_' . $app['bernard.driver']];
+        });
     }
 
     /**
@@ -82,5 +66,83 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
      */
     public function boot(Application $app)
     {
+    }
+
+    /**
+     * @param Application $app
+     */
+    protected function registerSerializers(Application $app)
+    {
+        $app['bernard.serializer_symfony'] = $app->share(function ($app) {
+            return new Serializer\SymfonySerializer($app['serializer']);
+        });
+
+        if (isset($app['serializer'])) {
+            $app['serializer.normalizers'] = $app->share($app->extend('serializer.normalizers', function ($normalizers) {
+                array_unshift($normalizers, new Symfony\EnvelopeNormalizer, new Symfony\DefaultMessageNormalizer);
+
+                return $normalizers;
+            }));
+        }
+
+        $app['bernard.serializer_jms'] = $app->share(function ($app) {
+            return new Serializer\JMSSerializer($app['jms_serializer']);
+        });
+
+        if (isset($app['jms_serializer'])) {
+            $app['jms_serializer.builder'] = $app->share($app->extend('jms_serializer.builder', function ($builder, $app) {
+                $builder->configureHandlers(function ($registry) {
+                    $register->registerSubscribingHandler(new JMSSerializer\EnvelopeHandler);
+                });
+            }));
+        }
+
+        if (isset($app['serializer.normalizers'])) {
+            $app['serializer.normalizers'] = $app->share($app->extend('serializer.normalizers', function ($normalizers) {
+                array_unshift($normalizers, new Symfony\EnvelopeNormalizer, new Symfony\DefaultMessageNormalizer);
+
+                return $normalizers;
+            }));
+        }
+    }
+
+    /**
+     * @param Application $app
+     */
+    protected function registerDrivers(Application $app)
+    {
+        $app['bernard.driver_predis'] = $app->share(function ($app) {
+            return new PredisDriver($app['predis']);
+        });
+
+        $app['bernard.driver_doctrine'] = $app->share(function ($app) {
+            return new Driver\DoctrineDriver($app['dbs']['bernard']);
+        });
+
+        $app['bernard.driver_redis'] = $app->share(function ($app) {
+            return new Driver\RedisDriver($app['redis']);
+        });
+
+        $app['bernard.driver_iron_mq'] = $app->share(function ($app) {
+            return new Driver\IronMqDriver($app['iron_mq']);
+        });
+
+        $app['bernard.driver_sqs'] = $app->share(function ($app) {
+            return new Driver\SqsDriver($app['aws']->get('sqs'));
+        });
+    }
+
+    /**
+     * @param Application $app
+     */
+    protected function registerConsole(Application $app)
+    {
+        if (!isset($app['console'])) {
+            return;
+        }
+
+        $app['console'] = $app->share($app->extend('console', function ($console, $app) {
+            $app['console']->add(new Symfony\ConsumeCommand($app['bernard.consumer']));
+        }));
     }
 }

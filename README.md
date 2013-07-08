@@ -6,72 +6,58 @@ Brings Bernard to Silex.
 Getting Started
 ---------------
 
-Registering and configuring `PredisServiceProvider` is required. It will default to use the
-service `predis`. This can be overwritten if needed.
+Add the requirement to your `composer.json` file and register it with you Application.
+
+``` json
+{
+    "require" : {
+        "bernard/silex-service-provider"
+    }
+}
+```
 
 ``` php
 <?php
 
-use Bernard\Silex\BernardServiceProvider;
-use Predis\Silex\PredisServiceProvider;
+$app = new Silex\Application;
+$app->register(new Bernard\Silex\BernardServiceProvider);
+```
 
-// .. create $app
-$app->register(new BernardServiceProvider);
-$app->register(new PredisServiceProvider);
+After that you have to make a decision about what driver and what kind of Serializer
+you want to use.
 
-// if you want to use a custom predis client the best thing is to
-// overwrite $app['bernard.predis'];
-$app['predis.parameters']  = 'tcp://localhost';
-$app['predis.options'] = array(
-    'prefix' => 'bernard:',
+The following serializers are supported:
+
+ * JMS Serializer. Requires a service with id `jms_serializer` and `jms_serializer.builder` is present.
+ * Symfony Serializer. Requires `SerializerServiceProvider` is registered before this provider.
+
+
+The following drivers are supported:
+
+ * Doctrine DBAL requires `DoctrineServiceProvider` where it try and use a `bernard` connection.
+ * Predis requires https://github.com/nrk/PredisServiceProvider and a `predis` service. If you use the multi
+ service provider, you should overwrite `bernard.predis_driver` and do a custom service.
+ * Redis extension. Requires http://pecl.php.net/package/redis to be installed and a `redis` service.
+ * Amazon SQS requires AWS SDK PHP version 2 or creater and https://github.com/aws/aws-sdk-php-silex.
+ * Iron.MQ requires `iron-io/iron_mq` package and a `iron_mq` service.
+
+Registering with the ServiceResolver
+------------------------------------
+
+The ServiceResolver enabled supports service ids. This means they are lazy loaded when they are needed instead
+of when they are registering.
+
+Register `bernard.services` with an array of `MessageName => ServiceId` like so:
+
+<?php
+
+$app['bernard.services'] = array(
+    'ImportUsers' => 'users_worker',
 );
 ```
 
-Now you are ready to produce messages to a queue.
+Console
+-------
 
-``` php
-<?php
-
-use Bernard\Message\DefaultMessage;
-
-// .. create $app
-$app['bernard.producer']->produce(new DefaultMessage('SendNewsletter', array(
-    'id' => 12,
-));
-```
-
-Or consume messages.
-
-``` php
-<?php
-
-use Bernard\Command\ConsumeCommand;
-
-// .. create $app
-$app['bernard.service_resolver'] = $app->share($app->extend('bernard.service_resolver', function ($resolver, $app) {
-    // The ServicePrivider uses a special lazy loading service resolver.
-    // which will resolve the service based on the id.
-    $resolver->register('SendNewsletter', 'my_service_id');
-
-    return $resolver;
-}));
-
-$app['console']->add(new ConsumeCommand($app['bernard.service_resolver'], $app['bernard.queue_factory']));
-$app['console']->run();
-```
-
-``` bash
-$ ./bin/console bernard:consume 'send-newsletter'
-```
-
-A Note on Debug
----------------
-
-When `$app['debug']` is true it will use the in memory queuing instead of redis.
-This can be circumvented by doing the following after registering this provider.
-
-``` php
-<?php
-// .. create $app and register BernardServiceProvider
-$app['bernard.queue_factory'] = $app->raw('bernard.queue_factory.real'];
-```
+If there is a service named `console` the consume command will be automatically registred. For advanced
+usecases see the official documentation on Bernard.

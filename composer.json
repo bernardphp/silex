@@ -1,24 +1,25 @@
 {
-    "name" : "henrikbjorn/bernard-service-provider",
+    "name" : "bernard/silex",
     "description" : "Silex service provider for Bernard",
     "license" : "MIT",
     "autoload" : {
         "psr-0" : {
-            "Bernard" : "src/"
+            "Bernard\\Silex\\" : "src/"
         }
     },
 
+    "replace" : {
+        "henrikbjorn/bernard-service-provider" : "self.version"
+    },
+
     "require" : {
-        "php"                     : ">=5.3.3",
-        "henrikbjorn/bernard"     : "~0.4",
-        "predis/service-provider" : "~0.4",
-        "jms/serializer"          : "~0.12",
-        "silex/silex"             : "~1.0"
+        "php" : ">=5.3.3",
+        "bernard/bernard" : "~0.6"
     },
 
     "extra" : {
         "branch-alias" : {
-            "dev-master" : "0.3.x-dev"
+            "dev-master" : "0.4.x-dev"
         }
     }
 }
