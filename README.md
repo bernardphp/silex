@@ -52,6 +52,7 @@ of when they are registering.
 
 Register `bernard.services` with an array of `MessageName => ServiceId` like so:
 
+``` php
 <?php
 
 $app['bernard.services'] = array(
