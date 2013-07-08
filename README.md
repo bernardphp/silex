@@ -20,7 +20,10 @@ Add the requirement to your `composer.json` file and register it with you Applic
 <?php
 
 $app = new Silex\Application;
-$app->register(new Bernard\Silex\BernardServiceProvider);
+$app->register(new Bernard\Silex\BernardServiceProvider, array(
+    'bernard.driver' = 'doctrine', // or redis, predis, sqs, iron_mq
+    'bernard.serializer' => 'symfony', // or jms
+);
 ```
 
 After that you have to make a decision about what driver and what kind of Serializer
@@ -49,6 +52,7 @@ of when they are registering.
 
 Register `bernard.services` with an array of `MessageName => ServiceId` like so:
 
+``` php
 <?php
 
 $app['bernard.services'] = array(

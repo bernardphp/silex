@@ -38,7 +38,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.queue_factory'] = $app->share(function ($app) {
-            return new QueueFactory\PersistentFactory($app['bernard.driver'], $app['bernard.serializer']);
+            return new QueueFactory\PersistentFactory($app['bernard.driver_real'], $app['bernard.serializer_real']);
         });
 
         $app['bernard.service_resolver'] = $app->share(function ($app) {
