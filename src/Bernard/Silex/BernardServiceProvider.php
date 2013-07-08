@@ -52,12 +52,12 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
             return $resolver;
         });
 
-        $app['bernard.driver'] = $app->share(function ($app) {
+        $app['bernard.driver_real'] = $app->share(function ($app) {
             return $app['bernard.driver_' . $app['bernard.driver']];
         });
 
-        $app['bernard.serializer'] = $app->share(function ($app) {
-            return $app['bernard.serializer_' . $app['bernard.driver']];
+        $app['bernard.serializer_real'] = $app->share(function ($app) {
+            return $app['bernard.serializer_' . $app['bernard.serializer']];
         });
     }
 
