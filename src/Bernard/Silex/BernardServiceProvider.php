@@ -142,7 +142,9 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         }
 
         $app['console'] = $app->share($app->extend('console', function ($console, $app) {
-            $app['console']->add(new Symfony\ConsumeCommand($app['bernard.consumer']));
+            $console->add(new Symfony\Command\ConsumeCommand($app['bernard.consumer'], $app['bernard.queue_factory']));
+
+            return $console;
         }));
     }
 }
