@@ -1,5 +1,5 @@
-BernardServiceProvider
-======================
+Bernard bindings for Silex
+==========================
 
 Brings Bernard to Silex.
 
@@ -11,7 +11,7 @@ Add the requirement to your `composer.json` file and register it with you Applic
 ``` json
 {
     "require" : {
-        "bernard/silex-service-provider"
+        "bernard/silex" :  "~0.4@dev"
     }
 }
 ```
