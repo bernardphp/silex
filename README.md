@@ -1,6 +1,8 @@
 Bernard bindings for Silex
 ==========================
 
+[![Build Status](https://travis-ci.org/bernardphp/silex.png?branch=master)](https://travis-ci.org/bernardphp/silex)
+
 Brings Bernard to Silex.
 
 Getting Started
