@@ -74,7 +74,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
     protected function registerSerializers(Application $app)
     {
         $app['bernard.serializer_naive'] = $app->share(function () {
-            new Serializer\NaiveSerializer;
+            return new Serializer\NaiveSerializer;
         });
 
         $app['bernard.serializer_symfony'] = $app->share(function ($app) {
