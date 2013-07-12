@@ -19,7 +19,7 @@ class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
         $this->app['bernard.serializer_jms'] = new \stdClass;
 
         $this->assertEquals('doctrine', $this->app['bernard.driver']);
-        $this->assertEquals('symfony', $this->app['bernard.serializer']);
+        $this->assertEquals('naive', $this->app['bernard.serializer']);
 
         $this->app['bernard.serializer'] = 'jms';
         $this->assertSame($this->app['bernard.serializer_real'], $this->app['bernard.serializer_jms']);

@@ -33,6 +33,7 @@ you want to use.
 
 The following serializers are supported:
 
+ * Naive. No dependencies and it is the default.
  * JMS Serializer. Requires a service with id `jms_serializer` and `jms_serializer.builder` is present.
  * Symfony Serializer. Requires `SerializerServiceProvider` is registered before this provider.
 
