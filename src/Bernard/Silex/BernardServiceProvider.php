@@ -132,7 +132,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.driver_sqs'] = $app->share(function ($app) {
-            return new Driver\SqsDriver($app['aws']->get('sqs'));
+            return new Driver\SqsDriver($app['aws']->get('sqs'), $app['bernard.queue_urls']);
         });
     }
 
