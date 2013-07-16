@@ -146,8 +146,13 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         }
 
         $app['console'] = $app->share($app->extend('console', function ($console, $app) {
-            $console->add(new Symfony\Command\ConsumeCommand($app['bernard.consumer'], $app['bernard.queue_factory']));
-            $console->add(new Symfony\Command\ProduceCommand($app['bernard.producer']));
+            if (class_exists('Bernard\Symfony\Command\ConsumeCommand')) {
+                $console->add(new Symfony\Command\ConsumeCommand($app['bernard.consumer'], $app['bernard.queue_factory']));
+            }
+
+            if (class_exists('Bernard\Symfony\Command\ProduceCommand')) {
+                $console->add(new Symfony\Command\ProduceCommand($app['bernard.producer']));
+            }
 
             return $console;
         }));
