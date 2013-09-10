@@ -5,6 +5,7 @@ namespace Bernard\Silex;
 use Bernard\Consumer;
 use Bernard\Driver;
 use Bernard\JMSSerializer;
+use Bernard\Middleware;
 use Bernard\Pimple;
 use Bernard\Producer;
 use Bernard\QueueFactory;
@@ -30,11 +31,11 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         $this->registerConsole($app);
 
         $app['bernard.consumer'] = $app->share(function ($app) {
-            return new Consumer($app['bernard.service_resolver'], $app['bernard.queue_factory']);
+            return new Consumer($app['bernard.service_resolver'], $app['bernard.consumer_middleware']);
         });
 
         $app['bernard.producer'] = $app->share(function ($app) {
-            return new Producer($app['bernard.queue_factory']);
+            return new Producer($app['bernard.queue_factory'], $app['bernard.producer_middleware']);
         });
 
         $app['bernard.queue_factory'] = $app->share(function ($app) {
@@ -58,6 +59,14 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
 
         $app['bernard.serializer_real'] = $app->share(function ($app) {
             return $app['bernard.serializer_' . $app['bernard.serializer']];
+        });
+
+        $app['bernard.consumer_middleware'] = $app->share(function ($app) {
+            return new Middleware\MiddlewareBuilder;
+        });
+
+        $app['bernard.producer_middleware'] = $app->share(function ($app) {
+            return new Middelware\MiddlewareBuilder;
         });
     }
 
