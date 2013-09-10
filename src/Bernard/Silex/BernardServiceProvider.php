@@ -66,7 +66,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.producer_middleware'] = $app->share(function ($app) {
-            return new Middelware\MiddlewareBuilder;
+            return new Middleware\MiddlewareBuilder;
         });
     }
 
