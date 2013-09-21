@@ -23,9 +23,9 @@ Add the requirement to your `composer.json` file and register it with you Applic
 
 $app = new Silex\Application;
 $app->register(new Bernard\Silex\BernardServiceProvider, array(
-    'bernard.driver' = 'doctrine', // or redis, predis, sqs, iron_mq
+    'bernard.driver' => 'doctrine', // or redis, predis, sqs, iron_mq
     'bernard.serializer' => 'symfony', // or jms
-);
+));
 ```
 
 After that you have to make a decision about what driver and what kind of Serializer
