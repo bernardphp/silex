@@ -125,7 +125,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
     protected function registerDrivers(Application $app)
     {
         $app['bernard.driver_predis'] = $app->share(function ($app) {
-            return new PredisDriver($app['predis']);
+            return new Driver\PredisDriver($app['predis']);
         });
 
         $app['bernard.driver_doctrine'] = $app->share(function ($app) {
