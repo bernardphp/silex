@@ -15,13 +15,19 @@ class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultOptions()
     {
-        $this->app['bernard.serializer_symfony'] = new \stdClass;
-        $this->app['bernard.serializer_jms'] = new \stdClass;
-
         // Default settings
-        $this->assertEquals('doctrine', $this->app['bernard.driver']);
-        $this->assertEquals('naive', $this->app['bernard.serializer']);
+        $this->assertEquals('doctrine', $this->app['bernard.config']['driver']);
+        $this->assertEquals('naive', $this->app['bernard.config']['serializer']);
+    }
 
-        $this->assertInstanceOf('Bernard\Serializer', $this->app['bernard.serializer_real']);
+    public function testOverrideOptions()
+    {
+        $this->app['bernard.options'] = array(
+            'driver' => 'predis',
+            'serializer' => 'symfony',
+        );
+
+        $this->assertEquals('predis', $this->app['bernard.config']['driver']);
+        $this->assertEquals('symfony', $this->app['bernard.config']['serializer']);
     }
 }

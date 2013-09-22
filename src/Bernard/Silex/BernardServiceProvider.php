@@ -24,12 +24,16 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['bernard.driver'] = 'doctrine';
-        $app['bernard.serializer'] = 'naive';
-
         $this->registerDrivers($app);
         $this->registerSerializers($app);
         $this->registerConsole($app);
+
+        $app['bernard.config'] = $app->share(function ($app) {
+            return $app['bernard.options'] + array(
+                'driver' => 'doctrine',
+                'serializer' => 'naive',
+            );
+        });
 
         $app['bernard.consumer'] = $app->share(function ($app) {
             return new Consumer($app['bernard.service_resolver'], $app['bernard.consumer_middleware']);
@@ -40,26 +44,25 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.queue_factory'] = $app->share(function ($app) {
-            return new QueueFactory\PersistentFactory($app['bernard.driver_real'], $app['bernard.serializer_real']);
+            return new QueueFactory\PersistentFactory($app['bernard.driver'], $app['bernard.serializer']);
         });
 
         $app['bernard.service_resolver'] = $app->share(function ($app) {
             $resolver = new Pimple\PimpleAwareResolver($app);
 
-            $names = array_keys($app['bernard.services']);
-            $serviceIds = array_values($app['bernard.services']);
-
-            array_map(array($resolver, 'register'), $names, $serviceIds);
+            foreach ($app['bernard.receivers'] as $name => $receiver) {
+                $resolver->register($name, $receiver);
+            }
 
             return $resolver;
         });
 
-        $app['bernard.driver_real'] = $app->share(function ($app) {
-            return $app['bernard.driver_' . $app['bernard.driver']];
+        $app['bernard.driver'] = $app->share(function ($app) {
+            return $app['bernard.driver_' . $app['bernard.config']['driver']];
         });
 
-        $app['bernard.serializer_real'] = $app->share(function ($app) {
-            return $app['bernard.serializer_' . $app['bernard.serializer']];
+        $app['bernard.serializer'] = $app->share(function ($app) {
+            return $app['bernard.serializer_' . $app['bernard.config']['serializer']];
         });
 
         $app['bernard.consumer_middleware'] = $app->share(function ($app) {
@@ -69,6 +72,14 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         $app['bernard.producer_middleware'] = $app->share(function ($app) {
             return new Middleware\MiddlewareBuilder;
         });
+
+
+        // defaults.
+        foreach (array('bernard.receivers', 'bernard.options') as $default) {
+            if (!isset($app[$default])) {
+                $app[$default] = array();
+            }
+        }
     }
 
     /**
