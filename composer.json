@@ -14,7 +14,7 @@
 
     "require" : {
         "php"             : ">=5.3.3",
-        "bernard/bernard" : ">=0.9.0,<1.0.0"
+        "bernard/bernard" : "~0.10"
     },
 
     "require-dev" : {
@@ -23,7 +23,7 @@
 
     "extra" : {
         "branch-alias" : {
-            "dev-master" : "0.4.x-dev"
+            "dev-master" : "0.5.x-dev"
         }
     }
 }

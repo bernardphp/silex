@@ -48,13 +48,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.service_resolver'] = $app->share(function ($app) {
-            $resolver = new Pimple\PimpleAwareResolver($app);
-
-            foreach ($app['bernard.receivers'] as $name => $receiver) {
-                $resolver->register($name, $receiver);
-            }
-
-            return $resolver;
+            return new Pimple\PimpleAwareRouter($app, $app['bernard.receivers']);
         });
 
         $app['bernard.driver'] = $app->share(function ($app) {
