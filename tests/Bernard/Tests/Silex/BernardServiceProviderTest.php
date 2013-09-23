@@ -17,7 +17,8 @@ class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
     {
         // Default settings
         $this->assertEquals('doctrine', $this->app['bernard.config']['driver']);
-        $this->assertEquals('naive', $this->app['bernard.config']['serializer']);
+        $this->assertEquals(null, $this->app['bernard.config']['prefetch']);
+        $this->assertEquals('simple', $this->app['bernard.config']['serializer']);
     }
 
     public function testOverrideOptions()
@@ -25,8 +26,10 @@ class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
         $this->app['bernard.options'] = array(
             'driver' => 'predis',
             'serializer' => 'symfony',
+            'prefetch' => 10,
         );
 
+        $this->assertEquals(10, $this->app['bernard.config']['prefetch']);
         $this->assertEquals('predis', $this->app['bernard.config']['driver']);
         $this->assertEquals('symfony', $this->app['bernard.config']['serializer']);
     }

@@ -30,8 +30,9 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
 
         $app['bernard.config'] = $app->share(function ($app) {
             return $app['bernard.options'] + array(
-                'driver' => 'doctrine',
-                'serializer' => 'naive',
+                'driver'     => 'doctrine',
+                'serializer' => 'simple',
+                'prefetch'   => null,
             );
         });
 
@@ -88,8 +89,8 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
      */
     protected function registerSerializers(Application $app)
     {
-        $app['bernard.serializer_naive'] = $app->share(function () {
-            return new Serializer\NaiveSerializer;
+        $app['bernard.serializer_simple'] = $app->share(function () {
+            return new Serializer\SimpleSerializer;
         });
 
         $app['bernard.serializer_symfony'] = $app->share(function ($app) {
@@ -143,11 +144,11 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.driver_iron_mq'] = $app->share(function ($app) {
-            return new Driver\IronMqDriver($app['iron_mq']);
+            return new Driver\IronMqDriver($app['iron_mq'], $app['bernard.config']['prefetch']);
         });
 
         $app['bernard.driver_sqs'] = $app->share(function ($app) {
-            return new Driver\SqsDriver($app['aws']->get('sqs'), $app['bernard.queue_urls']);
+            return new Driver\SqsDriver($app['aws']->get('sqs'), $app['bernard.queue_urls'], $app['bernard.config']['prefetch']);
         });
     }
 

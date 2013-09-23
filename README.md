@@ -25,7 +25,7 @@ $app = new Silex\Application;
 $app->register(new Bernard\Silex\BernardServiceProvider, array(
     'bernard.options' => array(
         'driver' => 'doctrine', // or redis, predis, sqs, iron_mq
-        'serializer' => 'symfony', // or jms or naive
+        'serializer' => 'symfony', // or jms or simple
     ),
 ));
 ```
@@ -35,7 +35,7 @@ you want to use.
 
 The following serializers are supported:
 
- * Naive. No dependencies and it is the default.
+ * Simple. No dependencies and it is the default.
  * JMS Serializer. Requires a service with id `jms_serializer` and `jms_serializer.builder` is present.
  * Symfony Serializer. Requires `SerializerServiceProvider` is registered before this provider.
 
