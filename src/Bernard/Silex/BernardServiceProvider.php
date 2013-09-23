@@ -36,7 +36,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
         });
 
         $app['bernard.consumer'] = $app->share(function ($app) {
-            return new Consumer($app['bernard.service_resolver'], $app['bernard.consumer_middleware']);
+            return new Consumer($app['bernard.router'], $app['bernard.consumer_middleware']);
         });
 
         $app['bernard.producer'] = $app->share(function ($app) {
@@ -47,7 +47,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
             return new QueueFactory\PersistentFactory($app['bernard.driver'], $app['bernard.serializer']);
         });
 
-        $app['bernard.service_resolver'] = $app->share(function ($app) {
+        $app['bernard.router'] = $app->share(function ($app) {
             return new Pimple\PimpleAwareRouter($app, $app['bernard.receivers']);
         });
 
