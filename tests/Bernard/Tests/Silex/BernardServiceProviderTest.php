@@ -16,7 +16,7 @@ class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
     public function testDefaultOptions()
     {
         // Default settings
-        $this->assertEquals('doctrine', $this->app['bernard.config']['driver']);
+        $this->assertEquals('flat_file', $this->app['bernard.config']['driver']);
         $this->assertEquals(null, $this->app['bernard.config']['prefetch']);
         $this->assertEquals('simple', $this->app['bernard.config']['serializer']);
     }

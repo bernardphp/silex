@@ -30,7 +30,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
 
         $app['bernard.config'] = $app->share(function ($app) {
             return $app['bernard.options'] + array(
-                'driver'     => 'doctrine',
+                'driver'     => 'flat_file',
                 'serializer' => 'simple',
                 'prefetch'   => null,
                 'directory'  => null,
