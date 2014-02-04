@@ -33,6 +33,7 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
                 'driver'     => 'doctrine',
                 'serializer' => 'simple',
                 'prefetch'   => null,
+                'directory'  => null,
             );
         });
 
@@ -135,12 +136,16 @@ class BernardServiceProvider implements \Silex\ServiceProviderInterface
             return new Driver\PredisDriver($app['predis']);
         });
 
+        $app['bernard.driver_flat_file'] = $app->share(function ($app) {
+            return new Driver\FlatFileDriver($app['bernard.config']['directory']);
+        });
+
         $app['bernard.driver_doctrine'] = $app->share(function ($app) {
             return new Driver\DoctrineDriver($app['dbs']['bernard']);
         });
 
         $app['bernard.driver_redis'] = $app->share(function ($app) {
-            return new Driver\RedisDriver($app['redis']);
+            return new Driver\PhpRedisDriver($app['redis']);
         });
 
         $app['bernard.driver_iron_mq'] = $app->share(function ($app) {

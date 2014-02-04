@@ -8,13 +8,9 @@
         }
     },
 
-    "replace" : {
-        "henrikbjorn/bernard-service-provider" : "self.version"
-    },
-
     "require" : {
         "php"             : ">=5.3.3",
-        "bernard/bernard" : "~0.10"
+        "bernard/bernard" : ">=0.12,<0.13"
     },
 
     "require-dev" : {
