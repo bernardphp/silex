@@ -3,7 +3,7 @@ Bernard bindings for Silex
 
 [![Build Status](https://travis-ci.org/bernardphp/silex.png?branch=master)](https://travis-ci.org/bernardphp/silex)
 
-Brings Bernard to Silex.
+Brings [Bernard][bernard] to [Silex][silex].
 
 Getting Started
 ---------------
@@ -70,3 +70,7 @@ Console
 
 If there is a service named `console` the consume command will be automatically registred. For advanced
 usecases see the official documentation on Bernard.
+
+
+[bernard]: https://github.com/bernardphp/bernard
+[silex]: http://silex.sensiolabs.org/
