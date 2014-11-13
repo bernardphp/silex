@@ -1,10 +1,10 @@
 {
-    "name" : "bernard/silex",
-    "description" : "Silex service provider for Bernard",
+    "name" : "bernard/pimple",
+    "description" : "Pimple service provider for Bernard",
     "license" : "MIT",
     "autoload" : {
         "psr-0" : {
-            "Bernard\\Silex\\" : "src/"
+            "Bernard\\Pimple\\" : "src/"
         }
     },
 

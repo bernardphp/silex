@@ -1,8 +1,8 @@
 <?php
 
-namespace Bernard\Tests\Silex;
+namespace Bernard\Tests\Pimple;
 
-use Bernard\Silex\BernardServiceProvider;
+use Bernard\Pimple\BernardServiceProvider;
 use Pimple\Container;
 
 class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase

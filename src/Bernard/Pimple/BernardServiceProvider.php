@@ -1,6 +1,6 @@
 <?php
 
-namespace Bernard\Silex;
+namespace Bernard\Pimple;
 
 use Bernard\Command;
 use Bernard\Consumer;
