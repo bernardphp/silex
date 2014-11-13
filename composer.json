@@ -14,7 +14,7 @@
     },
 
     "require-dev" : {
-        "silex/silex"     : "~1.0"
+        "pimple/pimple"   : "~3.0"
     },
 
     "extra" : {
