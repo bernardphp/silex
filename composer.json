@@ -19,7 +19,7 @@
 
     "extra" : {
         "branch-alias" : {
-            "dev-pimple3" : "0.5.x-dev"
+            "dev-pimple3" : "0.6.x-dev"
         }
     }
 }
