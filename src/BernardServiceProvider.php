@@ -13,11 +13,11 @@ use Bernard\QueueFactory;
 use Bernard\Serializer;
 use Bernard\Symfony;
 use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
 /**
- * @package Bernard
  */
-class BernardServiceProvider implements \Pimple\ServiceProviderInterface
+class BernardServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}
@@ -54,21 +54,20 @@ class BernardServiceProvider implements \Pimple\ServiceProviderInterface
         };
 
         $app['bernard.driver'] = function ($app) {
-            return $app['bernard.driver_' . $app['bernard.config']['driver']];
+            return $app['bernard.driver_'.$app['bernard.config']['driver']];
         };
 
         $app['bernard.serializer'] = function ($app) {
-            return $app['bernard.serializer_' . $app['bernard.config']['serializer']];
+            return $app['bernard.serializer_'.$app['bernard.config']['serializer']];
         };
 
         $app['bernard.consumer_middleware'] = function ($app) {
-            return new Middleware\MiddlewareBuilder;
+            return new Middleware\MiddlewareBuilder();
         };
 
         $app['bernard.producer_middleware'] = function ($app) {
-            return new Middleware\MiddlewareBuilder;
+            return new Middleware\MiddlewareBuilder();
         };
-
 
         // defaults.
         foreach (array('bernard.receivers', 'bernard.options') as $default) {
@@ -84,7 +83,7 @@ class BernardServiceProvider implements \Pimple\ServiceProviderInterface
     protected function registerSerializers(Container $app)
     {
         $app['bernard.serializer_simple'] = function () {
-            return new Serializer\SimpleSerializer;
+            return new Serializer\SimpleSerializer();
         };
 
         $app['bernard.serializer_symfony'] = function ($app) {
@@ -93,7 +92,7 @@ class BernardServiceProvider implements \Pimple\ServiceProviderInterface
 
         if (isset($app['serializer'])) {
             $app['serializer.normalizers'] = $app->extend('serializer.normalizers', function ($normalizers) {
-                array_unshift($normalizers, new Symfony\EnvelopeNormalizer, new Symfony\DefaultMessageNormalizer);
+                array_unshift($normalizers, new Symfony\EnvelopeNormalizer(), new Symfony\DefaultMessageNormalizer());
 
                 return $normalizers;
             });
@@ -106,14 +105,14 @@ class BernardServiceProvider implements \Pimple\ServiceProviderInterface
         if (isset($app['jms_serializer'])) {
             $app['jms_serializer.builder'] = $app->extend('jms_serializer.builder', function ($builder, $app) {
                 $builder->configureHandlers(function ($registry) {
-                    $registry->registerSubscribingHandler(new JMSSerializer\EnvelopeHandler);
+                    $registry->registerSubscribingHandler(new JMSSerializer\EnvelopeHandler());
                 });
             });
         }
 
         if (isset($app['serializer.normalizers'])) {
             $app['serializer.normalizers'] = $app->extend('serializer.normalizers', function ($normalizers) {
-                array_unshift($normalizers, new Symfony\EnvelopeNormalizer, new Symfony\DefaultMessageNormalizer);
+                array_unshift($normalizers, new Symfony\EnvelopeNormalizer(), new Symfony\DefaultMessageNormalizer());
 
                 return $normalizers;
             });
