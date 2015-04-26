@@ -1,7 +1,7 @@
-Bernard bindings for Silex
-==========================
+Bernard bindings for Pimple
+===========================
 
-[![Build Status](https://travis-ci.org/bernardphp/silex.png?branch=master)](https://travis-ci.org/bernardphp/silex)
+[![Build Status](https://travis-ci.org/bangpound/bernard-service-provider.svg?branch=pimple3)](https://travis-ci.org/bangpound/bernard-service-provider)
 
 Brings [Bernard][bernard] to [Pimple][pimple].
 
@@ -13,7 +13,7 @@ Add the requirement to your `composer.json` file and register it with you Applic
 ``` json
 {
     "require" : {
-        "bernard/silex" :  "~0.4@dev"
+        "bernard/pimple" :  "~0.5@dev"
     }
 }
 ```
@@ -22,7 +22,7 @@ Add the requirement to your `composer.json` file and register it with you Applic
 <?php
 
 $app = new Pimple\Container;
-$app->register(new Bernard\Silex\BernardServiceProvider, array(
+$app->register(new Bernard\Pimple\BernardServiceProvider, array(
     'bernard.options' => array(
         'driver' => 'doctrine', // or redis, predis, sqs, iron_mq
         'serializer' => 'symfony', // or jms or simple
