@@ -1,15 +1,15 @@
 <?php
 
-namespace Bernard\Tests\Silex;
+namespace Bernard\Tests\Pimple;
 
-use Bernard\Silex\BernardServiceProvider;
-use Silex\Application;
+use Bernard\Pimple\BernardServiceProvider;
+use Pimple\Container;
 
 class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->app = new Application;
+        $this->app = new Container;
         $this->app->register(new BernardServiceProvider);
     }
 
