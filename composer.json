@@ -3,7 +3,7 @@
     "description" : "Pimple service provider for Bernard",
     "license" : "MIT",
     "autoload" : {
-        "psr-0" : {
+        "psr-4" : {
             "Bernard\\Pimple\\" : "src/"
         }
     },
