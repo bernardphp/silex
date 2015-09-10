@@ -3,13 +3,14 @@
 namespace Bernard\Tests\Silex;
 
 use Bernard\Silex\BernardServiceProvider;
-use Silex\Application;
+use Pimple\Container;
 
 class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
+
     public function setUp()
     {
-        $this->app = new Application;
+        $this->app = new Container();
         $this->app->register(new BernardServiceProvider);
     }
 
@@ -24,9 +25,9 @@ class BernardServiceProviderTest extends \PHPUnit_Framework_TestCase
     public function testOverrideOptions()
     {
         $this->app['bernard.options'] = array(
-            'driver' => 'predis',
+            'driver'     => 'predis',
             'serializer' => 'symfony',
-            'prefetch' => 10,
+            'prefetch'   => 10,
         );
 
         $this->assertEquals(10, $this->app['bernard.config']['prefetch']);
