@@ -12,165 +12,160 @@ use Bernard\Producer;
 use Bernard\QueueFactory;
 use Bernard\Serializer;
 use Bernard\Symfony;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 use Silex\Application;
 
 /**
  * @package Bernard
  */
-class BernardServiceProvider implements \Silex\ServiceProviderInterface
+class BernardServiceProvider implements ServiceProviderInterface
 {
+
     /**
      * {@inheritDoc}
      */
-    public function register(Application $app)
+    public function register(Container $container)
     {
-        $this->registerDrivers($app);
-        $this->registerSerializers($app);
-        $this->registerConsole($app);
+        $this->registerDrivers($container);
+        $this->registerSerializers($container);
+        $this->registerConsole($container);
 
-        $app['bernard.config'] = $app->share(function ($app) {
-            return $app['bernard.options'] + array(
+        $container['bernard.config'] = function ($container) {
+            return $container['bernard.options'] + array(
                 'driver'     => 'flat_file',
                 'serializer' => 'simple',
                 'prefetch'   => null,
                 'directory'  => null,
             );
-        });
+        };
 
-        $app['bernard.consumer'] = $app->share(function ($app) {
-            return new Consumer($app['bernard.router'], $app['bernard.consumer_middleware']);
-        });
+        $container['bernard.consumer'] = function ($container) {
+            return new Consumer($container['bernard.router'], $container['bernard.consumer_middleware']);
+        };
 
-        $app['bernard.producer'] = $app->share(function ($app) {
-            return new Producer($app['bernard.queue_factory'], $app['bernard.producer_middleware']);
-        });
+        $container['bernard.producer'] = function ($container) {
+            return new Producer($container['bernard.queue_factory'], $container['bernard.producer_middleware']);
+        };
 
-        $app['bernard.queue_factory'] = $app->share(function ($app) {
-            return new QueueFactory\PersistentFactory($app['bernard.driver'], $app['bernard.serializer']);
-        });
+        $container['bernard.queue_factory'] = function ($container) {
+            return new QueueFactory\PersistentFactory($container['bernard.driver'], $container['bernard.serializer']);
+        };
 
-        $app['bernard.router'] = $app->share(function ($app) {
-            return new Pimple\PimpleAwareRouter($app, $app['bernard.receivers']);
-        });
+        $container['bernard.router'] = function ($container) {
+            return new Pimple\PimpleAwareRouter($container, $container['bernard.receivers']);
+        };
 
-        $app['bernard.driver'] = $app->share(function ($app) {
-            return $app['bernard.driver_' . $app['bernard.config']['driver']];
-        });
+        $container['bernard.driver'] = function ($container) {
+            return $container['bernard.driver_' . $container['bernard.config']['driver']];
+        };
 
-        $app['bernard.serializer'] = $app->share(function ($app) {
-            return $app['bernard.serializer_' . $app['bernard.config']['serializer']];
-        });
+        $container['bernard.serializer'] = function ($container) {
+            return $container['bernard.serializer_' . $container['bernard.config']['serializer']];
+        };
 
-        $app['bernard.consumer_middleware'] = $app->share(function ($app) {
+        $container['bernard.consumer_middleware'] = function ($container) {
             return new Middleware\MiddlewareBuilder;
-        });
+        };
 
-        $app['bernard.producer_middleware'] = $app->share(function ($app) {
+        $container['bernard.producer_middleware'] = function ($container) {
             return new Middleware\MiddlewareBuilder;
-        });
-
+        };
 
         // defaults.
         foreach (array('bernard.receivers', 'bernard.options') as $default) {
-            if (!isset($app[$default])) {
-                $app[$default] = array();
+            if (!isset($container[$default])) {
+                $container[$default] = array();
             }
         }
     }
 
     /**
-     * {@inheritDoc}
+     * @param Container $container
      */
-    public function boot(Application $app)
+    protected function registerSerializers(Container $container)
     {
-    }
-
-    /**
-     * @param Application $app
-     */
-    protected function registerSerializers(Application $app)
-    {
-        $app['bernard.serializer_simple'] = $app->share(function () {
+        $container['bernard.serializer_simple'] = function () {
             return new Serializer\SimpleSerializer;
-        });
+        };
 
-        $app['bernard.serializer_symfony'] = $app->share(function ($app) {
-            return new Serializer\SymfonySerializer($app['serializer']);
-        });
+        $container['bernard.serializer_symfony'] = function ($container) {
+            return new Serializer\SymfonySerializer($container['serializer']);
+        };
 
-        if (isset($app['serializer'])) {
-            $app['serializer.normalizers'] = $app->share($app->extend('serializer.normalizers', function ($normalizers) {
+        if (isset($container['serializer'])) {
+            $container['serializer.normalizers'] = $container->extend('serializer.normalizers', function ($normalizers) {
                 array_unshift($normalizers, new Symfony\EnvelopeNormalizer, new Symfony\DefaultMessageNormalizer);
 
                 return $normalizers;
-            }));
+            });
         }
 
-        $app['bernard.serializer_jms'] = $app->share(function ($app) {
-            return new Serializer\JMSSerializer($app['jms_serializer']);
-        });
+        $container['bernard.serializer_jms'] = function ($container) {
+            return new Serializer\JMSSerializer($container['jms_serializer']);
+        };
 
-        if (isset($app['jms_serializer'])) {
-            $app['jms_serializer.builder'] = $app->share($app->extend('jms_serializer.builder', function ($builder, $app) {
+        if (isset($container['jms_serializer'])) {
+            $container['jms_serializer.builder'] = $container->extend('jms_serializer.builder', function ($builder, $container) {
                 $builder->configureHandlers(function ($registry) {
                     $register->registerSubscribingHandler(new JMSSerializer\EnvelopeHandler);
                 });
-            }));
+            });
         }
 
-        if (isset($app['serializer.normalizers'])) {
-            $app['serializer.normalizers'] = $app->share($app->extend('serializer.normalizers', function ($normalizers) {
+        if (isset($container['serializer.normalizers'])) {
+            $container['serializer.normalizers'] = $container->extend('serializer.normalizers', function ($normalizers) {
                 array_unshift($normalizers, new Symfony\EnvelopeNormalizer, new Symfony\DefaultMessageNormalizer);
 
                 return $normalizers;
-            }));
+            });
         }
     }
 
     /**
-     * @param Application $app
+     * @param Container $container
      */
-    protected function registerDrivers(Application $app)
+    protected function registerDrivers(Container $container)
     {
-        $app['bernard.driver_predis'] = $app->share(function ($app) {
-            return new Driver\PredisDriver($app['predis']);
-        });
+        $container['bernard.driver_predis'] = function ($container) {
+            return new Driver\PredisDriver($container['predis']);
+        };
 
-        $app['bernard.driver_flat_file'] = $app->share(function ($app) {
-            return new Driver\FlatFileDriver($app['bernard.config']['directory']);
-        });
+        $container['bernard.driver_flat_file'] = function ($container) {
+            return new Driver\FlatFileDriver($container['bernard.config']['directory']);
+        };
 
-        $app['bernard.driver_doctrine'] = $app->share(function ($app) {
-            return new Driver\DoctrineDriver($app['dbs']['bernard']);
-        });
+        $container['bernard.driver_doctrine'] = function ($container) {
+            return new Driver\DoctrineDriver($container['dbs']['bernard']);
+        };
 
-        $app['bernard.driver_redis'] = $app->share(function ($app) {
-            return new Driver\PhpRedisDriver($app['redis']);
-        });
+        $container['bernard.driver_redis'] = function ($container) {
+            return new Driver\PhpRedisDriver($container['redis']);
+        };
 
-        $app['bernard.driver_iron_mq'] = $app->share(function ($app) {
-            return new Driver\IronMqDriver($app['iron_mq'], $app['bernard.config']['prefetch']);
-        });
+        $container['bernard.driver_iron_mq'] = function ($container) {
+            return new Driver\IronMqDriver($container['iron_mq'], $container['bernard.config']['prefetch']);
+        };
 
-        $app['bernard.driver_sqs'] = $app->share(function ($app) {
-            return new Driver\SqsDriver($app['aws']->get('sqs'), $app['bernard.queue_urls'], $app['bernard.config']['prefetch']);
-        });
+        $container['bernard.driver_sqs'] = function ($container) {
+            return new Driver\SqsDriver($container['aws']->get('sqs'), $container['bernard.queue_urls'], $container['bernard.config']['prefetch']);
+        };
     }
 
     /**
-     * @param Application $app
+     * @param Container $container
      */
-    protected function registerConsole(Application $app)
+    protected function registerConsole(Container $container)
     {
-        if (!isset($app['console'])) {
+        if (!isset($container['console'])) {
             return;
         }
 
-        $app['console'] = $app->share($app->extend('console', function ($console, $app) {
-            $console->add(new Command\ConsumeCommand($app['bernard.consumer'], $app['bernard.queue_factory']));
-            $console->add(new Command\ProduceCommand($app['bernard.producer']));
+        $container['console'] = $container->extend('console', function ($console, $container) {
+            $console->add(new Command\ConsumeCommand($container['bernard.consumer'], $container['bernard.queue_factory']));
+            $console->add(new Command\ProduceCommand($container['bernard.producer']));
 
             return $console;
-        }));
+        });
     }
 }

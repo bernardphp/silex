@@ -10,16 +10,13 @@
 
     "require" : {
         "php"             : ">=5.3.3",
-        "bernard/bernard" : ">=0.12,<0.13"
-    },
-
-    "require-dev" : {
-        "silex/silex"     : "~1.0"
+        "bernard/bernard" : ">=0.12,<0.13",
+        "pimple/pimple"   : "^3.0.0"
     },
 
     "extra" : {
         "branch-alias" : {
-            "dev-master" : "0.5.x-dev"
+            "dev-master" : "0.6.x-dev"
         }
     }
 }
