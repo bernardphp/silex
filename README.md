@@ -13,7 +13,7 @@ Add the requirement to your `composer.json` file and register it with you Applic
 ``` json
 {
     "require" : {
-        "bernard/silex" :  "~0.4@dev"
+        "bernard/silex" :  "~0.6@dev"
     }
 }
 ```
